@@ -12,6 +12,7 @@ const Tenor = require("tenorjs").client({
 
 // App Setup
 const app = express();
+app.use(express.static("public"));
 
 // Middleware
 const exphbs = require("express-handlebars");
@@ -25,7 +26,7 @@ app.get("/", async(req, res) => {
     let term = "";
     if (req.query.term) term = req.query.term;
     try {
-        const gifs = await Tenor.Search.Query(term, "10");
+        const gifs = await Tenor.Search.Query(term, "9");
 
         res.render("home", { gifs })
     } catch (err) {
