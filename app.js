@@ -1,5 +1,14 @@
+require("dotenv").config();
 // Require Libraries
 const express = require("express");
+
+// Require tenorjs near the top of the file
+const Tenor = require("tenorjs").client({
+    // Replace with your own key
+    "Key": process.env.API_KEY,
+    "Filter": "high",
+    "Locale": "en_US"
+})
 
 // App Setup
 const app = express();
@@ -11,9 +20,17 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // Routes
-app.get("/", (req, res) => {
-    console.log(req.query);
-    res.render("home")
+app.get("/", async(req, res) => {
+    // Handle the home page when we haven't queried yet
+    let term = "";
+    if (req.query.term) term = req.query.term;
+    try {
+        const gifs = await Tenor.Search.Query(term, "10");
+
+        res.render("home", { gifs })
+    } catch (err) {
+        console.log(err);
+    }
 })
 
 app.get("/greetings/:name", (req, res) => {
